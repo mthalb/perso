@@ -4,8 +4,11 @@ const { getSignedReadUrl } = require('../lib/storage');
 // Add your videos here. `path` is the object's key inside your B2 bucket
 // (e.g. upload to a "vault/" folder to match the default below).
 const VIDEOS = [
-  { id: 'clip1', label: 'Clip 1', path: 'vault/clip1.mp4' },
-  { id: 'clip2', label: 'Clip 2', path: 'vault/clip2.mp4' },
+  { id: 'clip1', label: 'phonk', path: 'vault/MONTAGEM OSCURIDA - RVNGE (360p, h264).mp4' },
+  { id: 'clip2', label: 'jack', path: 'vault/jack.mp4' },
+  { id: 'clip2', label: '', path: 'vault/mbapeer.mp4' },
+  { id: 'clip2', label: '', path: 'vault/no sig alc (online-video-cutter.com).mp4' },
+  { id: 'clip2', label: '', path: 'vault/jack.mp4' },
 ];
 
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
