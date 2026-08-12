@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vault · ঢাকা</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1030;
+    --panel:#341A4A;
+    --parchment:#F0DCC8;
+    --rose:#D9667A;
+    --gold:#E7B24E;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:var(--ink);
+    color:var(--parchment);
+    font-family:'Inter',sans-serif;
+  }
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:6vh 5vw;
+  }
+
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:"";
+    width:28px;
+    height:1px;
+    background:var(--gold);
+    opacity:0.6;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(26px, 4vw, 38px);
+    margin:0 0 30px;
+    text-align:center;
+  }
+
+  /* --- Lock screen --- */
+  #lockScreen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+    max-width:360px;
+  }
+  #pwForm{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+  }
+  #pwInput{
+    font-family:'Space Mono', monospace;
+    font-size:18px;
+    letter-spacing:0.1em;
+    text-align:center;
+    padding:14px 16px;
+    border-radius:10px;
+    border:1px solid rgba(240,220,200,0.25);
+    background:var(--panel);
+    color:var(--parchment);
+    outline:none;
+  }
+  #pwInput:focus{ border-color:var(--gold); }
+  #pwSubmit{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:13px 16px;
+    border-radius:10px;
+    border:none;
+    background:var(--gold);
+    color:var(--ink);
+    cursor:pointer;
+  }
+  #pwSubmit:hover{ opacity:0.9; }
+  #pwSubmit:disabled{ opacity:0.6; cursor:default; }
+  #pwError{
+    color:var(--rose);
+    font-size:13px;
+    text-align:center;
+    min-height:18px;
+    margin-top:4px;
+  }
+  .back-link{
+    margin-top:26px;
+    font-size:12px;
+    color:var(--rose);
+    text-decoration:none;
+    letter-spacing:0.05em;
+    opacity:0.75;
+  }
+  .back-link:hover{ opacity:1; }
+
+  /* --- Video gallery --- */
+  #gallery{
+    display:none;
+    width:100%;
+    max-width:900px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:24px;
+    width:100%;
+  }
+  .card{
+    background:var(--panel);
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(231,178,78,0.15);
+  }
+  .card video{
+    width:100%;
+    display:block;
+    background:#000;
+  }
+  .card .label{
+    padding:12px 14px;
+    font-size:13px;
+    letter-spacing:0.04em;
+    color:var(--gold);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Private</div>
+
+  <div id="lockScreen">
+    <h1>Enter Password</h1>
+    <form id="pwForm">
+      <input type="password" id="pwInput" placeholder="••••••••" autocomplete="off" />
+      <button type="submit" id="pwSubmit">Unlock</button>
+    </form>
+    <div id="pwError"></div>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+  </div>
+
+  <div id="gallery">
+    <h1>Vault</h1>
+    <div class="grid" id="videoGrid"></div>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+  </div>
+
+</div>
+
+<script>
+// The password is checked server-side (see /api/login.js) — it never ships
+// to the browser, and the video list/files are only served once a valid
+// session cookie is present (see /api/videos.js and /api/video.js).
+
+const form = document.getElementById('pwForm');
+const input = document.getElementById('pwInput');
+const submitBtn = document.getElementById('pwSubmit');
+const errEl = document.getElementById('pwError');
+
+async function showGallery(){
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = '';
+
+  const res = await fetch('/api/videos', { credentials: 'include' });
+  if (!res.ok) {
+    errEl.textContent = 'Session expired — please try again.';
+    return;
+  }
+  const { videos } = await res.json();
+
+  videos.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <video controls preload="metadata" src="${v.src}"></video>
+      <div class="label">${v.label}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('lockScreen').style.display = 'none';
+  const gallery = document.getElementById('gallery');
+  gallery.style.display = 'flex';
+  gallery.style.flexDirection = 'column';
+  gallery.style.alignItems = 'center';
+}
+
+// If we already have a valid session (e.g. page refresh), skip the lock screen.
+(async function checkExistingSession(){
+  const res = await fetch('/api/videos', { credentials: 'include' });
+  if (res.ok) showGallery();
+})();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errEl.textContent = '';
+  submitBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ password: input.value }),
+    });
+
+    if (res.ok) {
+      await showGallery();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      errEl.textContent = data.error || 'Incorrect password.';
+      input.value = '';
+      input.focus();
+    }
+  } catch (err) {
+    errEl.textContent = 'Something went wrong — try again.';
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
