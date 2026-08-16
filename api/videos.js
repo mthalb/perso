@@ -15,7 +15,7 @@ const VIDEOS = [
 // Upload these into a separate "vault2/" folder and list them here.
 const VIDEOS_2 = [
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/grabnwatch.com_video.mp4' },
-  // { id: 'coc1', label: 'Clash of Clans', path: 'vault2/coc1.mp4' },
+   { id: 'coc1', label: 'Clash of Clans', path: 'vault/#followforfollowback #reelsinstagram #fypシ #fyp #reelitfeelit.mp4' },
 ];
 
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
