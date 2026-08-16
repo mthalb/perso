@@ -16,6 +16,10 @@ const VIDEOS = [
 const VIDEOS_2 = [
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/grabnwatch.com_video.mp4' },
    { id: 'coc1', label: 'Clash of Clans', path: 'vault/#followforfollowback #reelsinstagram #fypシ #fyp #reelitfeelit.mp4' },
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault/alyx.mp4' },
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault/viqa.mp4' },
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault/4464fef0-763e-4843-be6c-1ec2f7549a23.mp4' },
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault/grabnwatch.com_video.mp4' },
 ];
 
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
