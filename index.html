@@ -8,19 +8,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1B1030;
-    --panel:#341A4A;
-    --parchment:#F0DCC8;
-    --rose:#D9667A;
-    --gold:#E7B24E;
+    --ink:#0B0F1A;
+    --panel:#161B2C;
+    --parchment:#E7EAF6;
+    --rose:#FF5C7A;
+    --gold:#7C6CF5;
+    --accent2:#22D3C9;
   }
   *{box-sizing:border-box;}
   html,body{
     margin:0;
     min-height:100%;
-    background:var(--ink);
     color:var(--parchment);
     font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  body{
+    background:
+      radial-gradient(circle at 15% 20%, rgba(124,108,245,0.28), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(34,211,201,0.20), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(255,92,122,0.14), transparent 55%),
+      var(--ink);
+    background-size:200% 200%, 200% 200%, 200% 200%, 100% 100%;
+    animation:driftBg 22s ease-in-out infinite;
+  }
+  @keyframes driftBg{
+    0%{ background-position:0% 0%, 100% 0%, 50% 100%, 0 0; }
+    50%{ background-position:60% 40%, 30% 60%, 40% 30%, 0 0; }
+    100%{ background-position:0% 0%, 100% 0%, 50% 100%, 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body{ animation:none; }
   }
   .wrap{
     min-height:100vh;
@@ -79,12 +97,13 @@
     text-align:center;
     padding:14px 16px;
     border-radius:10px;
-    border:1px solid rgba(240,220,200,0.25);
+    border:1px solid rgba(231,234,246,0.2);
     background:var(--panel);
     color:var(--parchment);
     outline:none;
+    transition:border-color 0.25s ease, box-shadow 0.25s ease;
   }
-  #pwInput:focus{ border-color:var(--gold); }
+  #pwInput:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(124,108,245,0.18); }
   #pwSubmit{
     font-family:'Inter',sans-serif;
     font-weight:600;
@@ -97,9 +116,11 @@
     background:var(--gold);
     color:var(--ink);
     cursor:pointer;
+    transition:transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
   }
-  #pwSubmit:hover{ opacity:0.9; }
-  #pwSubmit:disabled{ opacity:0.6; cursor:default; }
+  #pwSubmit:hover{ opacity:0.92; transform:translateY(-2px); box-shadow:0 8px 18px rgba(124,108,245,0.28); }
+  #pwSubmit:active{ transform:translateY(0); }
+  #pwSubmit:disabled{ opacity:0.6; cursor:default; transform:none; box-shadow:none; }
   #pwError{
     color:var(--rose);
     font-size:13px;
@@ -125,26 +146,294 @@
   }
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
-    gap:24px;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:22px;
     width:100%;
   }
   .card{
     background:var(--panel);
     border-radius:14px;
     overflow:hidden;
-    border:1px solid rgba(231,178,78,0.15);
+    border:1px solid rgba(124,108,245,0.15);
+    cursor:pointer;
+    transition:transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   }
-  .card video{
+  .card:hover{
+    transform:translateY(-4px) scale(1.015);
+    box-shadow:0 14px 28px rgba(0,0,0,0.45);
+    border-color:rgba(124,108,245,0.5);
+  }
+  .card:active{ transform:translateY(-1px) scale(0.99); }
+  /* Fixed 3:4 frame so mixed portrait/landscape clips fill the card evenly
+     instead of leaving empty letterbox bars — actual aspect is preserved
+     in the floating player when opened. */
+  .thumb-wrap{
+    position:relative;
     width:100%;
-    display:block;
+    aspect-ratio:3/4;
     background:#000;
+    overflow:hidden;
   }
+  .thumb-wrap video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    pointer-events:none;
+  }
+  .play-badge{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(to top, rgba(0,0,0,0.45), transparent 40%);
+  }
+  .play-badge::after{
+    content:"";
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--gold), var(--accent2));
+    box-shadow:0 6px 18px rgba(0,0,0,0.4);
+    clip-path:polygon(35% 25%, 35% 75%, 75% 50%);
+    transition:transform 0.2s ease, filter 0.2s ease;
+  }
+  .card:hover .play-badge::after{ transform:scale(1.1); filter:brightness(1.15); }
   .card .label{
     padding:12px 14px;
     font-size:13px;
     letter-spacing:0.04em;
     color:var(--gold);
+  }
+
+  /* --- Circle button to games vault --- */
+  #gamesBtn{
+    position:fixed;
+    top:20px;
+    right:20px;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:1px solid rgba(124,108,245,0.35);
+    background:var(--panel);
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:18px;
+    z-index:20;
+    transition:transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+  #gamesBtn:hover{ opacity:0.9; transform:scale(1.1); box-shadow:0 6px 16px rgba(124,108,245,0.3); }
+  #gamesBtn:active{ transform:scale(0.95); }
+
+  /* --- Games gate (NO ACCESS reveal) --- */
+  #gamesGate{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:var(--ink);
+    z-index:30;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:6vh 5vw;
+    text-align:center;
+  }
+  #noAccessText{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(32px, 7vw, 54px);
+    color:var(--rose);
+    cursor:pointer;
+    user-select:none;
+    margin:0 0 10px;
+  }
+  #gateHint{
+    font-size:12px;
+    color:var(--parchment);
+    opacity:0.5;
+    margin-bottom:24px;
+  }
+  #gatePwWrap{
+    display:none;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+    max-width:360px;
+  }
+  #gateClose{
+    margin-top:26px;
+    font-size:12px;
+    color:var(--rose);
+    background:none;
+    border:none;
+    cursor:pointer;
+    opacity:0.75;
+    letter-spacing:0.05em;
+  }
+  #gateClose:hover{ opacity:1; }
+
+  /* --- 18+ popup --- */
+  #ageOverlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(27,16,48,0.85);
+    z-index:40;
+    align-items:center;
+    justify-content:center;
+  }
+  #ageBox{
+    background:var(--panel);
+    border:1px solid rgba(124,108,245,0.25);
+    border-radius:14px;
+    padding:32px 28px;
+    max-width:320px;
+    width:90%;
+    text-align:center;
+  }
+  #ageBox p{
+    font-size:15px;
+    line-height:1.5;
+    margin:0 0 22px;
+  }
+  .age-btns{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+  }
+  .age-btns button{
+    flex:1;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:12px 10px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    transition:transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  }
+  .age-btns button:hover{ transform:translateY(-2px); opacity:0.92; }
+  .age-btns button:active{ transform:translateY(0); }
+  #ageYes{ background:var(--gold); color:var(--ink); }
+  #ageYes:hover{ box-shadow:0 8px 18px rgba(124,108,245,0.3); }
+  #ageNo{ background:transparent; color:var(--rose); border:1px solid var(--rose) !important; }
+
+  /* --- Games gallery --- */
+  #gamesGallery{
+    display:none;
+    width:100%;
+    max-width:900px;
+  }
+
+  /* --- Floating video player (lightbox) --- */
+  #playerOverlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,6,18,0.88);
+    backdrop-filter:blur(4px);
+    z-index:50;
+    align-items:center;
+    justify-content:center;
+    padding:4vh 4vw;
+    opacity:0;
+    transition:opacity 0.22s ease;
+  }
+  #playerOverlay.show{ opacity:1; }
+  #playerBox{
+    position:relative;
+    background:#000;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.55);
+    max-width:92vw;
+    max-height:88vh;
+    transform:scale(0.92) translateY(14px);
+    transition:transform 0.25s cubic-bezier(.2,.8,.3,1.2);
+  }
+  #playerOverlay.show #playerBox{ transform:scale(1) translateY(0); }
+  #playerVideo{
+    display:block;
+    max-width:92vw;
+    max-height:88vh;
+    background:#000;
+  }
+  #playerClose{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:none;
+    background:rgba(0,0,0,0.55);
+    color:var(--parchment);
+    font-size:18px;
+    cursor:pointer;
+    z-index:2;
+    transition:background 0.18s ease, transform 0.18s ease;
+  }
+  #playerClose:hover{ background:rgba(0,0,0,0.8); transform:scale(1.08); }
+  #playerLabel{
+    position:absolute;
+    left:14px;
+    bottom:56px;
+    color:var(--parchment);
+    font-size:13px;
+    letter-spacing:0.03em;
+    text-shadow:0 2px 6px rgba(0,0,0,0.6);
+    z-index:2;
+    pointer-events:none;
+  }
+  /* Custom control bar — avoids the mobile "tap speaker = instant mute/max
+     volume" jump that native <video controls> volume buttons cause. */
+  #playerControls{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    background:linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    z-index:2;
+  }
+  #playerControls button{
+    background:none;
+    border:none;
+    color:var(--parchment);
+    font-size:17px;
+    cursor:pointer;
+    padding:4px;
+    line-height:1;
+    transition:transform 0.15s ease, color 0.15s ease;
+  }
+  #playerControls button:hover{ color:var(--gold); transform:scale(1.1); }
+  #playerSeek{
+    flex:1;
+    accent-color:var(--gold);
+    cursor:pointer;
+  }
+  #playerVolume{
+    width:70px;
+    accent-color:var(--gold);
+    cursor:pointer;
+  }
+
+  @media (max-width:640px){
+    .wrap{ padding:4vh 4vw; }
+    h1{ margin-bottom:20px; }
+    .grid{ grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
+    .card .label{ font-size:12px; padding:9px 10px; }
+    #gamesBtn{ top:12px; right:12px; width:40px; height:40px; font-size:16px; }
+    #playerVolume{ width:48px; }
+    #playerControls{ gap:6px; padding:8px; }
+    #ageBox{ padding:24px 18px; }
   }
 </style>
 </head>
@@ -164,9 +453,55 @@
   </div>
 
   <div id="gallery">
+    <button id="gamesBtn" title="•">●</button>
     <h1>Vault</h1>
     <div class="grid" id="videoGrid"></div>
     <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+  </div>
+
+  <!-- Second vault: gameplay clips, hidden behind a "NO ACCESS" reveal + its own password -->
+  <div id="gamesGate">
+    <div id="noAccessText">NO ACCESS</div>
+    <div id="gateHint"></div>
+    <form id="gatePwWrap">
+      <input type="password" id="gatePwInput" placeholder="••••••••" autocomplete="off" />
+      <button type="submit" id="gatePwSubmit">Unlock</button>
+      <div id="gatePwError" style="color:var(--rose);font-size:13px;text-align:center;min-height:18px;"></div>
+    </form>
+    <button id="gateClose" type="button">← back</button>
+  </div>
+
+  <!-- 18+ confirmation, shown right after a correct games-vault password -->
+  <div id="ageOverlay">
+    <div id="ageBox">
+      <p>This section contains gameplay content.<br>Are you 18 or older?</p>
+      <div class="age-btns">
+        <button id="ageNo" type="button">No</button>
+        <button id="ageYes" type="button">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gamesGallery">
+    <h1>Games</h1>
+    <div class="grid" id="gamesVideoGrid"></div>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+  </div>
+
+  <!-- Floating video player: opens when a card is clicked -->
+  <div id="playerOverlay">
+    <div id="playerBox">
+      <video id="playerVideo" playsinline></video>
+      <div id="playerLabel"></div>
+      <button id="playerClose" type="button" aria-label="Close">✕</button>
+      <div id="playerControls">
+        <button id="playerPlay" type="button" aria-label="Play/Pause">▶</button>
+        <input id="playerSeek" type="range" min="0" max="100" value="0" step="0.1" />
+        <button id="playerMute" type="button" aria-label="Mute">🔊</button>
+        <input id="playerVolume" type="range" min="0" max="1" value="0.6" step="0.01" />
+        <button id="playerFull" type="button" aria-label="Fullscreen">⛶</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -181,26 +516,32 @@ const input = document.getElementById('pwInput');
 const submitBtn = document.getElementById('pwSubmit');
 const errEl = document.getElementById('pwError');
 
+function buildCard(v){
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="thumb-wrap">
+      <video preload="metadata" src="${v.src}#t=0.5" muted playsinline></video>
+      <div class="play-badge"></div>
+    </div>
+    <div class="label">${v.label}</div>
+  `;
+  card.addEventListener('click', () => openPlayer(v));
+  return card;
+}
+
 async function showGallery(){
   const grid = document.getElementById('videoGrid');
   grid.innerHTML = '';
 
-  const res = await fetch('/api/videos', { credentials: 'include' });
+  const res = await fetch('/api/videos?vault=kids', { credentials: 'include' });
   if (!res.ok) {
     errEl.textContent = 'Session expired — please try again.';
     return;
   }
   const { videos } = await res.json();
 
-  videos.forEach(v => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <video controls preload="metadata" src="${v.src}"></video>
-      <div class="label">${v.label}</div>
-    `;
-    grid.appendChild(card);
-  });
+  videos.forEach(v => grid.appendChild(buildCard(v)));
 
   document.getElementById('lockScreen').style.display = 'none';
   const gallery = document.getElementById('gallery');
@@ -209,11 +550,10 @@ async function showGallery(){
   gallery.style.alignItems = 'center';
 }
 
-// If we already have a valid session (e.g. page refresh), skip the lock screen.
-(async function checkExistingSession(){
-  const res = await fetch('/api/videos', { credentials: 'include' });
-  if (res.ok) showGallery();
-})();
+// NOTE: no auto-skip of the lock screen on load anymore — a session is only
+// honored for as long as the tab stays open (see the pagehide logout below).
+// That means every fresh visit, including a reload after the tab was closed,
+// asks for the password again.
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -225,7 +565,7 @@ form.addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ password: input.value }),
+      body: JSON.stringify({ vault: 'kids', password: input.value }),
     });
 
     if (res.ok) {
@@ -241,6 +581,236 @@ form.addEventListener('submit', async (e) => {
   } finally {
     submitBtn.disabled = false;
   }
+});
+
+/* ---------------- Games vault (18+) ---------------- */
+
+const gamesBtn = document.getElementById('gamesBtn');
+const gamesGate = document.getElementById('gamesGate');
+const noAccessText = document.getElementById('noAccessText');
+const gateHint = document.getElementById('gateHint');
+const gatePwWrap = document.getElementById('gatePwWrap');
+const gatePwInput = document.getElementById('gatePwInput');
+const gatePwSubmit = document.getElementById('gatePwSubmit');
+const gatePwError = document.getElementById('gatePwError');
+const gateClose = document.getElementById('gateClose');
+const ageOverlay = document.getElementById('ageOverlay');
+const ageYes = document.getElementById('ageYes');
+const ageNo = document.getElementById('ageNo');
+const gamesGallery = document.getElementById('gamesGallery');
+
+let noAccessClicks = 0;
+
+function resetGamesGate(){
+  noAccessClicks = 0;
+  gatePwWrap.style.display = 'none';
+  gateHint.textContent = '';
+  gatePwInput.value = '';
+  gatePwError.textContent = '';
+}
+
+gamesBtn.addEventListener('click', () => {
+  resetGamesGate();
+  document.getElementById('gallery').style.display = 'none';
+  gamesGate.style.display = 'flex';
+});
+
+gateClose.addEventListener('click', () => {
+  gamesGate.style.display = 'none';
+  document.getElementById('gallery').style.display = 'flex';
+});
+
+noAccessText.addEventListener('click', () => {
+  noAccessClicks++;
+  if (noAccessClicks >= 3 && gatePwWrap.style.display === 'none') {
+    gatePwWrap.style.display = 'flex';
+    gateHint.textContent = '';
+    gatePwInput.focus();
+  }
+});
+
+gatePwWrap.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  gatePwError.textContent = '';
+  gatePwSubmit.disabled = true;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vault: 'games', password: gatePwInput.value }),
+    });
+
+    if (res.ok) {
+      gamesGate.style.display = 'none';
+      ageOverlay.style.display = 'flex';
+    } else {
+      const data = await res.json().catch(() => ({}));
+      gatePwError.textContent = data.error || 'Incorrect password.';
+      gatePwInput.value = '';
+      gatePwInput.focus();
+    }
+  } catch (err) {
+    gatePwError.textContent = 'Something went wrong — try again.';
+  } finally {
+    gatePwSubmit.disabled = false;
+  }
+});
+
+ageNo.addEventListener('click', async () => {
+  // Kicked back out: clear the games session and return to the main vault.
+  try {
+    await fetch('/api/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vault: 'games' }),
+    });
+  } catch (err) {}
+  ageOverlay.style.display = 'none';
+  document.getElementById('gallery').style.display = 'flex';
+});
+
+ageYes.addEventListener('click', async () => {
+  ageOverlay.style.display = 'none';
+
+  const grid = document.getElementById('gamesVideoGrid');
+  grid.innerHTML = '';
+
+  const res = await fetch('/api/videos?vault=games', { credentials: 'include' });
+  if (!res.ok) {
+    document.getElementById('gallery').style.display = 'flex';
+    return;
+  }
+  const { videos } = await res.json();
+
+  videos.forEach(v => grid.appendChild(buildCard(v)));
+
+  gamesGallery.style.display = 'flex';
+  gamesGallery.style.flexDirection = 'column';
+  gamesGallery.style.alignItems = 'center';
+});
+
+/* ---------------- Floating video player ---------------- */
+
+const playerOverlay = document.getElementById('playerOverlay');
+const playerVideo = document.getElementById('playerVideo');
+const playerLabel = document.getElementById('playerLabel');
+const playerClose = document.getElementById('playerClose');
+const playerPlay = document.getElementById('playerPlay');
+const playerSeek = document.getElementById('playerSeek');
+const playerMute = document.getElementById('playerMute');
+const playerVolume = document.getElementById('playerVolume');
+const playerFull = document.getElementById('playerFull');
+
+// Start at a moderate volume rather than whatever the browser defaults to —
+// this is what fixes the "tap the speaker icon and it jumps to full blast
+// or instant mute" behavior: there's no native volume rocker anymore, just
+// this slider, which always moves gradually from wherever it currently is.
+let lastVolume = 0.6;
+
+function openPlayer(v){
+  playerVideo.src = v.src;
+  playerLabel.textContent = v.label || '';
+  playerVideo.volume = lastVolume;
+  playerVideo.muted = false;
+  playerVolume.value = lastVolume;
+  playerMute.textContent = '🔊';
+  playerPlay.textContent = '⏸';
+
+  playerOverlay.style.display = 'flex';
+  requestAnimationFrame(() => playerOverlay.classList.add('show'));
+  playerVideo.play().catch(() => {});
+}
+
+function closePlayer(){
+  playerOverlay.classList.remove('show');
+  setTimeout(() => {
+    playerOverlay.style.display = 'none';
+    playerVideo.pause();
+    playerVideo.removeAttribute('src');
+    playerVideo.load();
+  }, 200);
+}
+
+playerClose.addEventListener('click', closePlayer);
+playerOverlay.addEventListener('click', (e) => {
+  if (e.target === playerOverlay) closePlayer();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && playerOverlay.style.display !== 'none') closePlayer();
+});
+
+playerPlay.addEventListener('click', () => {
+  if (playerVideo.paused) {
+    playerVideo.play();
+    playerPlay.textContent = '⏸';
+  } else {
+    playerVideo.pause();
+    playerPlay.textContent = '▶';
+  }
+});
+playerVideo.addEventListener('click', () => playerPlay.click());
+
+playerVideo.addEventListener('timeupdate', () => {
+  if (playerVideo.duration) {
+    playerSeek.value = (playerVideo.currentTime / playerVideo.duration) * 100;
+  }
+});
+playerSeek.addEventListener('input', () => {
+  if (playerVideo.duration) {
+    playerVideo.currentTime = (playerSeek.value / 100) * playerVideo.duration;
+  }
+});
+
+playerVolume.addEventListener('input', () => {
+  const vol = parseFloat(playerVolume.value);
+  playerVideo.volume = vol;
+  playerVideo.muted = false;
+  lastVolume = vol;
+  playerMute.textContent = vol === 0 ? '🔇' : '🔊';
+});
+playerMute.addEventListener('click', () => {
+  if (playerVideo.muted || playerVideo.volume === 0) {
+    playerVideo.muted = false;
+    playerVideo.volume = lastVolume || 0.6;
+    playerVolume.value = playerVideo.volume;
+    playerMute.textContent = '🔊';
+  } else {
+    lastVolume = playerVideo.volume;
+    playerVideo.muted = true;
+    playerVolume.value = 0;
+    playerMute.textContent = '🔇';
+  }
+});
+
+playerFull.addEventListener('click', () => {
+  const box = document.getElementById('playerBox');
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    (box.requestFullscreen || box.webkitRequestFullscreen)?.call(box);
+  }
+});
+
+/* ---------------- Log out when the visitor actually leaves ----------------
+   Without this, the session cookie stays valid for its full 2-hour lifetime,
+   so closing the tab and coming back (or opening the link elsewhere) would
+   still be unlocked. sendBeacon fires reliably even as the page is unloading. */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    navigator.sendBeacon?.('/api/logout', new Blob(
+      [JSON.stringify({ vault: 'all' })],
+      { type: 'application/json' }
+    ));
+  }
+});
+window.addEventListener('pagehide', () => {
+  navigator.sendBeacon?.('/api/logout', new Blob(
+    [JSON.stringify({ vault: 'all' })],
+    { type: 'application/json' }
+  ));
 });
 </script>
 </body>
