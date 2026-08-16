@@ -11,17 +11,35 @@ const VIDEOS = [
   { id: 'clip2', label: '', path: 'vault/jack.mp4' },
 ];
 
+// Second, 18+-gated gallery — gameplay clips (PUBG, Clash of Clans, etc).
+// Upload these into a separate "vault2/" folder and list them here.
+const VIDEOS_2 = [
+  // { id: 'pubg1', label: 'PUBG clip', path: 'vault2/pubg1.mp4' },
+  // { id: 'coc1', label: 'Clash of Clans', path: 'vault2/coc1.mp4' },
+];
+
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
+const VAULTS = {
+  kids: { cookieName: 'vault_token', videos: VIDEOS },
+  games: { cookieName: 'vault_token_2', videos: VIDEOS_2 },
+};
+
 module.exports = async (req, res) => {
-  const token = getCookie(req, 'vault_token');
+  const vaultKey = (req.query && req.query.vault) || 'kids';
+  const vault = VAULTS[vaultKey];
+  if (!vault) {
+    return res.status(400).json({ error: 'Unknown vault' });
+  }
+
+  const token = getCookie(req, vault.cookieName);
   if (!verify(token, process.env.VAULT_SECRET)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
     const videos = await Promise.all(
-      VIDEOS.map(async (v) => {
+      vault.videos.map(async (v) => {
         const url = await getSignedReadUrl(v.path, SIGNED_URL_TTL_MS);
         return { id: v.id, label: v.label, src: url };
       })
