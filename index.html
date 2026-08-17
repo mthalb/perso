@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vault · ঢাকা</title>
+<title>Vault · HELIX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -483,6 +483,7 @@
     box-shadow:0 20px 60px rgba(0,0,0,0.55);
     max-width:92vw;
     max-height:88vh;
+    min-width:280px;
     transform:scale(0.92) translateY(14px);
     transition:transform 0.25s cubic-bezier(.2,.8,.3,1.2);
   }
@@ -492,6 +493,34 @@
     max-width:92vw;
     max-height:88vh;
     background:#000;
+  }
+  /* Fullscreen: let the box fill the whole screen and keep the video
+     centered + fully visible (contain) instead of being cropped or
+     stuck at its old popup size — this is what fixes portrait/reels
+     clips not fitting once fullscreen is pressed. */
+  #playerBox:fullscreen,
+  #playerBox:-webkit-full-screen{
+    width:100vw;
+    height:100vh;
+    max-width:100vw;
+    max-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:0;
+    background:#000;
+  }
+  #playerBox:fullscreen #playerVideo,
+  #playerBox:-webkit-full-screen #playerVideo{
+    width:auto;
+    height:auto;
+    max-width:100vw;
+    max-height:100vh;
+    object-fit:contain;
+  }
+  #playerBox:fullscreen #playerControls,
+  #playerBox:-webkit-full-screen #playerControls{
+    max-width:100vw;
   }
   #playerClose{
     position:absolute;
@@ -526,8 +555,9 @@
     position:absolute;
     left:0; right:0; bottom:0;
     display:flex;
+    flex-wrap:wrap;
     align-items:center;
-    gap:10px;
+    gap:8px;
     padding:10px 12px;
     background:linear-gradient(to top, rgba(0,0,0,0.75), transparent);
     z-index:2;
@@ -540,16 +570,19 @@
     cursor:pointer;
     padding:4px;
     line-height:1;
+    flex-shrink:0;
     transition:transform 0.15s ease, color 0.15s ease;
   }
   #playerControls button:hover{ color:var(--gold); transform:scale(1.1); }
   #playerSeek{
-    flex:1;
+    flex:1 1 100%;
+    order:1;
     accent-color:var(--gold);
     cursor:pointer;
   }
   #playerVolume{
-    width:70px;
+    width:60px;
+    min-width:40px;
     accent-color:var(--gold);
     cursor:pointer;
   }
@@ -563,6 +596,188 @@
     #playerVolume{ width:48px; }
     #playerControls{ gap:6px; padding:8px; }
     #ageBox{ padding:24px 18px; }
+  }
+
+  /* --- Admin --- */
+  #adminGear{
+    position:fixed;
+    bottom:14px;
+    left:14px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid rgba(231,234,246,0.15);
+    background:rgba(22,27,44,0.6);
+    color:var(--parchment);
+    opacity:0.35;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:60;
+    transition:opacity 0.18s ease, transform 0.18s ease;
+  }
+  #adminGear:hover{ opacity:0.9; transform:rotate(35deg); }
+
+  .admin-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,6,18,0.88);
+    backdrop-filter:blur(4px);
+    z-index:70;
+    align-items:center;
+    justify-content:center;
+    padding:4vh 4vw;
+  }
+  .admin-box{
+    background:rgba(22,27,44,0.9);
+    border:1px solid rgba(124,108,245,0.25);
+    border-radius:16px;
+    padding:28px 26px;
+    width:100%;
+    max-width:340px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+    animation:gateIn 0.3s cubic-bezier(.2,.8,.3,1.2);
+  }
+  .admin-box.wide{ max-width:560px; }
+  .admin-box h2{
+    margin:0 0 18px;
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    color:var(--parchment);
+    text-align:center;
+  }
+  .admin-field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .admin-field label{
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    opacity:0.55;
+  }
+  .admin-field input[type="password"],
+  .admin-field input[type="text"],
+  .admin-field select{
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:11px 13px;
+    border-radius:9px;
+    border:1px solid rgba(231,234,246,0.2);
+    background:var(--ink);
+    color:var(--parchment);
+    outline:none;
+    transition:border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .admin-field input:focus,
+  .admin-field select:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(124,108,245,0.18); }
+  .admin-field input[type="file"]{
+    font-size:13px;
+    color:var(--parchment);
+  }
+  .admin-btn{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:12px;
+    border-radius:9px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold), var(--accent2));
+    color:#0B0F1A;
+    cursor:pointer;
+    transition:transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  }
+  .admin-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 18px rgba(124,108,245,0.32); }
+  .admin-btn:disabled{ opacity:0.55; cursor:default; transform:none; box-shadow:none; }
+  .admin-btn-ghost{
+    background:none;
+    border:1px solid rgba(231,234,246,0.2);
+    color:var(--parchment);
+  }
+  .admin-error{
+    color:var(--rose);
+    font-size:12px;
+    text-align:center;
+    min-height:16px;
+    margin-top:6px;
+  }
+  .admin-status{
+    font-size:12px;
+    text-align:center;
+    min-height:16px;
+    margin-top:6px;
+    color:var(--accent2);
+  }
+  .admin-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .admin-tab{
+    flex:1;
+    text-align:center;
+    padding:9px;
+    border-radius:8px;
+    border:1px solid rgba(231,234,246,0.15);
+    background:transparent;
+    color:var(--parchment);
+    font-size:12px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background 0.18s ease, border-color 0.18s ease;
+  }
+  .admin-tab.active{
+    background:rgba(124,108,245,0.22);
+    border-color:var(--gold);
+    color:var(--gold);
+  }
+  .admin-list{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-height:220px;
+    overflow-y:auto;
+  }
+  .admin-list-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 12px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(231,234,246,0.08);
+    font-size:13px;
+  }
+  .admin-list-item span{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .admin-list-item button{
+    flex-shrink:0;
+    background:none;
+    border:none;
+    color:var(--rose);
+    font-size:12px;
+    cursor:pointer;
+    opacity:0.75;
+  }
+  .admin-list-item button:hover{ opacity:1; }
+  .admin-close-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:16px;
   }
 </style>
 </head>
@@ -578,7 +793,7 @@
       <button type="submit" id="pwSubmit">Unlock</button>
     </form>
     <div id="pwError"></div>
-    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+    <a href="https://helixmedia.vercel.app/" class="back-link">← back to the page</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -586,7 +801,7 @@
     <button id="gamesBtn" title="•">●</button>
     <h1>Vault</h1>
     <div class="grid" id="videoGrid"></div>
-    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+    <a href="https://helixmedia.vercel.app/" class="back-link">← back to the page</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -618,7 +833,7 @@
   <div id="gamesGallery">
     <h1>Games</h1>
     <div class="grid" id="gamesVideoGrid"></div>
-    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
+    <a href="https://perso-livid.vercel.app/" class="back-link">← back to the page</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -634,6 +849,53 @@
         <button id="playerMute" type="button" aria-label="Mute">🔊</button>
         <input id="playerVolume" type="range" min="0" max="1" value="0.6" step="0.01" />
         <button id="playerFull" type="button" aria-label="Fullscreen">⛶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin: low-key entry point, bottom-left -->
+  <button id="adminGear" type="button" title="Admin">⚙</button>
+
+  <div class="admin-overlay" id="adminLoginOverlay">
+    <div class="admin-box">
+      <h2>Admin</h2>
+      <form id="adminLoginForm">
+        <div class="admin-field">
+          <label>Password</label>
+          <input type="password" id="adminPwInput" autocomplete="off" />
+        </div>
+        <button type="submit" class="admin-btn" id="adminLoginBtn">Log in</button>
+        <div class="admin-error" id="adminLoginError"></div>
+      </form>
+      <div class="admin-close-row">
+        <button type="button" class="admin-btn admin-btn-ghost" id="adminLoginCancel" style="width:auto;padding:8px 14px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-overlay" id="adminPanelOverlay">
+    <div class="admin-box wide">
+      <h2>Upload a video</h2>
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab active" data-vault="kids">Kids vault</button>
+        <button type="button" class="admin-tab" data-vault="games">Games vault</button>
+      </div>
+      <form id="adminUploadForm">
+        <div class="admin-field">
+          <label>Video file</label>
+          <input type="file" id="adminFileInput" accept="video/*" />
+        </div>
+        <div class="admin-field">
+          <label>Name / label</label>
+          <input type="text" id="adminLabelInput" placeholder="e.g. PUBG raid" autocomplete="off" />
+        </div>
+        <button type="submit" class="admin-btn" id="adminUploadBtn">＋ Add video</button>
+        <div class="admin-status" id="adminStatus"></div>
+        <div class="admin-error" id="adminUploadError"></div>
+      </form>
+      <div class="admin-list" id="adminList"></div>
+      <div class="admin-close-row">
+        <button type="button" class="admin-btn admin-btn-ghost" id="adminPanelClose" style="width:auto;padding:8px 14px;">Close</button>
       </div>
     </div>
   </div>
@@ -925,6 +1187,193 @@ playerFull.addEventListener('click', () => {
     document.exitFullscreen();
   } else {
     (box.requestFullscreen || box.webkitRequestFullscreen)?.call(box);
+  }
+});
+
+/* ---------------- Admin panel ---------------- */
+
+const adminGear = document.getElementById('adminGear');
+const adminLoginOverlay = document.getElementById('adminLoginOverlay');
+const adminLoginForm = document.getElementById('adminLoginForm');
+const adminPwInput = document.getElementById('adminPwInput');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminLoginError = document.getElementById('adminLoginError');
+const adminLoginCancel = document.getElementById('adminLoginCancel');
+
+const adminPanelOverlay = document.getElementById('adminPanelOverlay');
+const adminPanelClose = document.getElementById('adminPanelClose');
+const adminTabs = document.querySelectorAll('.admin-tab');
+const adminUploadForm = document.getElementById('adminUploadForm');
+const adminFileInput = document.getElementById('adminFileInput');
+const adminLabelInput = document.getElementById('adminLabelInput');
+const adminUploadBtn = document.getElementById('adminUploadBtn');
+const adminStatus = document.getElementById('adminStatus');
+const adminUploadError = document.getElementById('adminUploadError');
+const adminList = document.getElementById('adminList');
+
+let adminVault = 'kids';
+
+adminGear.addEventListener('click', () => {
+  adminLoginError.textContent = '';
+  adminPwInput.value = '';
+  adminLoginOverlay.style.display = 'flex';
+});
+adminLoginCancel.addEventListener('click', () => {
+  adminLoginOverlay.style.display = 'none';
+});
+
+adminLoginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  adminLoginError.textContent = '';
+  adminLoginBtn.disabled = true;
+  try {
+    const res = await fetch('/api/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ password: adminPwInput.value }),
+    });
+    if (res.ok) {
+      adminLoginOverlay.style.display = 'none';
+      adminPanelOverlay.style.display = 'flex';
+      await loadAdminList();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      adminLoginError.textContent = data.error || 'Incorrect password.';
+    }
+  } catch (err) {
+    adminLoginError.textContent = 'Something went wrong — try again.';
+  } finally {
+    adminLoginBtn.disabled = false;
+  }
+});
+
+adminPanelClose.addEventListener('click', () => {
+  adminPanelOverlay.style.display = 'none';
+});
+
+adminTabs.forEach((tab) => {
+  tab.addEventListener('click', async () => {
+    adminTabs.forEach((t) => t.classList.remove('active'));
+    tab.classList.add('active');
+    adminVault = tab.dataset.vault;
+    await loadAdminList();
+  });
+});
+
+async function loadAdminList(){
+  adminList.innerHTML = '<div class="admin-status">Loading…</div>';
+  try {
+    const res = await fetch(`/api/admin-videos?vault=${adminVault}`, { credentials: 'include' });
+    if (!res.ok) {
+      adminList.innerHTML = '';
+      return;
+    }
+    const { videos } = await res.json();
+    renderAdminList(videos);
+  } catch (err) {
+    adminList.innerHTML = '';
+  }
+}
+
+function renderAdminList(videos){
+  adminList.innerHTML = '';
+  if (!videos.length) {
+    adminList.innerHTML = '<div class="admin-status" style="opacity:0.5;">No uploads yet in this vault.</div>';
+    return;
+  }
+  videos.forEach((v) => {
+    const row = document.createElement('div');
+    row.className = 'admin-list-item';
+    row.innerHTML = `<span>${v.label || '(untitled)'}</span>`;
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.textContent = 'Remove';
+    delBtn.addEventListener('click', () => deleteAdminVideo(v.id));
+    row.appendChild(delBtn);
+    adminList.appendChild(row);
+  });
+}
+
+async function deleteAdminVideo(id){
+  try {
+    const res = await fetch('/api/admin-videos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vault: adminVault, id }),
+    });
+    if (res.ok) {
+      const { videos } = await res.json();
+      renderAdminList(videos);
+    }
+  } catch (err) {}
+}
+
+adminUploadForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  adminUploadError.textContent = '';
+  adminStatus.textContent = '';
+
+  const file = adminFileInput.files[0];
+  if (!file) {
+    adminUploadError.textContent = 'Choose a video file first.';
+    return;
+  }
+
+  adminUploadBtn.disabled = true;
+  try {
+    adminStatus.textContent = 'Requesting upload link…';
+    const urlRes = await fetch('/api/admin-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vault: adminVault, filename: file.name, contentType: file.type }),
+    });
+    if (!urlRes.ok) {
+      const data = await urlRes.json().catch(() => ({}));
+      throw new Error(data.error || 'Could not start upload.');
+    }
+    const { uploadUrl, key } = await urlRes.json();
+
+    adminStatus.textContent = 'Uploading video…';
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', uploadUrl);
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+      xhr.upload.onprogress = (ev) => {
+        if (ev.lengthComputable) {
+          const pct = Math.round((ev.loaded / ev.total) * 100);
+          adminStatus.textContent = `Uploading video… ${pct}%`;
+        }
+      };
+      xhr.onload = () => (xhr.status >= 200 && xhr.status < 300) ? resolve() : reject(new Error('Upload failed.'));
+      xhr.onerror = () => reject(new Error('Upload failed.'));
+      xhr.send(file);
+    });
+
+    adminStatus.textContent = 'Saving entry…';
+    const saveRes = await fetch('/api/admin-add-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ vault: adminVault, path: key, label: adminLabelInput.value.trim() }),
+    });
+    if (!saveRes.ok) {
+      const data = await saveRes.json().catch(() => ({}));
+      throw new Error(data.error || 'Upload succeeded but saving the entry failed.');
+    }
+
+    adminStatus.textContent = 'Added ✓';
+    adminFileInput.value = '';
+    adminLabelInput.value = '';
+    await loadAdminList();
+    setTimeout(() => { adminStatus.textContent = ''; }, 2000);
+  } catch (err) {
+    adminUploadError.textContent = err.message || 'Something went wrong.';
+    adminStatus.textContent = '';
+  } finally {
+    adminUploadBtn.disabled = false;
   }
 });
 
