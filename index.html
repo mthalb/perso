@@ -1340,7 +1340,10 @@ adminUploadForm.addEventListener('submit', async (e) => {
     await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('PUT', uploadUrl);
-      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+      // Deliberately no Content-Type header here: the presigned URL isn't
+      // signed with one (see storage.js), and sending it anyway caused B2
+      // to reject the request with SignatureDoesNotMatch.
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
       xhr.upload.onprogress = (ev) => {
         if (ev.lengthComputable) {
           const pct = Math.round((ev.loaded / ev.total) * 100);
