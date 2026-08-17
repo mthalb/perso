@@ -20,8 +20,12 @@ const VIDEOS_2 = [
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/viqa.mp4' },
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/4464fef0-763e-4843-be6c-1ec2f7549a23.mp4' },
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/comt.mp4' },
-   { id: 'pubg1', label: 'PUBG clip', path: 'vault/1709327-720p_Trim.mp4' },
-];
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault/1412.mp4' },
+  { id: 'pubg1', label: 'PUBG clip', path: 'vault/43.mp4' },
+  { id: 'pubg1', label: 'PUBG clip', path: 'vault/45.mp4' },
+  { id: 'pubg1', label: 'PUBG clip', path: 'vault/aagmal69clg.mp4' },
+  { id: 'pubg1', label: 'PUBG clip', path: 'vault/1709327-720p_Trim.mp4'},
+]; 
 
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
