@@ -34,11 +34,10 @@ module.exports = async (req, res) => {
   }
 
   const filename = sanitizeFilename(body && body.filename);
-  const contentType = (body && body.contentType) || 'video/mp4';
   const key = `${folder}/${Date.now()}-${filename}`;
 
   try {
-    const uploadUrl = await getSignedUploadUrl(key, contentType, UPLOAD_URL_TTL_MS);
+    const uploadUrl = await getSignedUploadUrl(key, UPLOAD_URL_TTL_MS);
     return res.status(200).json({ uploadUrl, key });
   } catch (err) {
     console.error('Failed to create upload URL:', err);
