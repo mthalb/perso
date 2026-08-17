@@ -9,6 +9,7 @@
 const COOKIE_NAMES = {
   kids: 'vault_token',
   games: 'vault_token_2',
+  admin: 'admin_token',
 };
 
 module.exports = async (req, res) => {
