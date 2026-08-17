@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vault · HELIX</title>
+<title>Vault · ঢাকা</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -793,7 +793,7 @@
       <button type="submit" id="pwSubmit">Unlock</button>
     </form>
     <div id="pwError"></div>
-    <a href="https://helixmedia.vercel.app/" class="back-link">← back to the page</a>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -801,7 +801,7 @@
     <button id="gamesBtn" title="•">●</button>
     <h1>Vault</h1>
     <div class="grid" id="videoGrid"></div>
-    <a href="https://helixmedia.vercel.app/" class="back-link">← back to the page</a>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -833,7 +833,7 @@
   <div id="gamesGallery">
     <h1>Games</h1>
     <div class="grid" id="gamesVideoGrid"></div>
-    <a href="https://perso-livid.vercel.app/" class="back-link">← back to the page</a>
+    <a href="dhaka_time.html" class="back-link">← back to the clock</a>
     <div class="credit">MADE BY HELIX TANVIR</div>
   </div>
 
@@ -1380,15 +1380,13 @@ adminUploadForm.addEventListener('submit', async (e) => {
 /* ---------------- Log out when the visitor actually leaves ----------------
    Without this, the session cookie stays valid for its full 2-hour lifetime,
    so closing the tab and coming back (or opening the link elsewhere) would
-   still be unlocked. sendBeacon fires reliably even as the page is unloading. */
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    navigator.sendBeacon?.('/api/logout', new Blob(
-      [JSON.stringify({ vault: 'all' })],
-      { type: 'application/json' }
-    ));
-  }
-});
+   still be unlocked. sendBeacon fires reliably even as the page is unloading.
+
+   NOTE: this used to also listen for `visibilitychange`, but that fires any
+   time the tab loses focus — including opening the native file picker for
+   admin uploads, switching apps on mobile, etc. That was logging people out
+   mid-task. `pagehide` only fires on an actual close/navigation, so that's
+   the only one used now. */
 window.addEventListener('pagehide', () => {
   navigator.sendBeacon?.('/api/logout', new Blob(
     [JSON.stringify({ vault: 'all' })],
