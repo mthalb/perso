@@ -27,6 +27,8 @@ const VIDEOS_2 = [
   { id: 'pubg1', label: 'PUBG clip', path: 'vault/viqa.mp4' },
   { id: 'pubg1', label: 'PUBG clip', path: 'vault/alyx.mp4' },
    { id: 'pubg1', label: 'PUBG clip', path: 'vault/comt.mp4' },
+   { id: 'pubg1', label: 'PUBG clip', path: 'vault2/11774499-480p.mp4' },
+  { id: 'pubg1', label: 'PUBG clip', path: 'vault2/13577533-720p.mp4' },
 ];
 
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 minutes
